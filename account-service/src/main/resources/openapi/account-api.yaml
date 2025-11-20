@@ -1,0 +1,539 @@
+openapi: 3.0.3
+info:
+  title: Account Service API
+  description: Microservicio para gestión de cuentas bancarias y movimientos
+  version: 1.0.0
+  contact:
+    email: business_banking@example.com
+
+servers:
+  - url: http://localhost:8082
+    description: Local Development Server
+
+tags:
+  - name: accounts
+    description: Operaciones CRUD para cuentas bancarias
+  - name: movements
+    description: Registro y consulta de movimientos
+  - name: reports
+    description: Generación de reportes
+
+paths:
+  /api/v1/accounts:
+    get:
+      tags:
+        - accounts
+      summary: Listar todas las cuentas
+      operationId: getAllAccounts
+      responses:
+        '200':
+          description: Lista de cuentas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountResponse'
+
+    post:
+      tags:
+        - accounts
+      summary: Crear nueva cuenta
+      operationId: createAccount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAccountRequest'
+      responses:
+        '201':
+          description: Cuenta creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+        '400':
+          description: Datos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/accounts/{id}:
+    get:
+      tags:
+        - accounts
+      summary: Buscar cuenta por ID
+      operationId: getAccountById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Cuenta encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+        '404':
+          description: Cuenta no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - accounts
+      summary: Actualizar cuenta
+      operationId: updateAccount
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAccountRequest'
+      responses:
+        '200':
+          description: Cuenta actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+        '404':
+          description: Cuenta no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - accounts
+      summary: Eliminar cuenta
+      operationId: deleteAccount
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Cuenta eliminada
+        '404':
+          description: Cuenta no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/accounts/number/{accountNumber}:
+    get:
+      tags:
+        - accounts
+      summary: Buscar cuenta por número
+      operationId: getAccountByNumber
+      parameters:
+        - name: accountNumber
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Cuenta encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+        '404':
+          description: Cuenta no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/accounts/customer/{customerId}:
+    get:
+      tags:
+        - accounts
+      summary: Listar cuentas de un cliente
+      operationId: getAccountsByCustomerId
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Lista de cuentas del cliente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountResponse'
+
+  /api/v1/movements:
+    get:
+      tags:
+        - movements
+      summary: Listar todos los movimientos
+      operationId: getAllMovements
+      responses:
+        '200':
+          description: Lista de movimientos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovementResponse'
+
+    post:
+      tags:
+        - movements
+      summary: Registrar movimiento
+      operationId: createMovement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMovementRequest'
+      responses:
+        '201':
+          description: Movimiento registrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovementResponse'
+        '400':
+          description: Datos inválidos o saldo insuficiente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/movements/{id}:
+    get:
+      tags:
+        - movements
+      summary: Buscar movimiento por ID
+      operationId: getMovementById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Movimiento encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovementResponse'
+        '404':
+          description: Movimiento no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - movements
+      summary: Eliminar movimiento
+      operationId: deleteMovement
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Movimiento eliminado
+        '404':
+          description: Movimiento no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/movements/account/{accountId}:
+    get:
+      tags:
+        - movements
+      summary: Listar movimientos de una cuenta
+      operationId: getMovementsByAccountId
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Lista de movimientos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovementResponse'
+
+  /api/v1/reports/{clientId}:
+    get:
+      tags:
+        - reports
+      summary: Generar reporte de estado de cuenta (F4)
+      description: |
+        Genera un reporte de estado de cuenta según requisito F4.
+        Endpoint: /api/v1/reports/{clientId}?startDate=fecha&endDate=fecha
+      operationId: getAccountStatement
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: ID del cliente
+          example: 1
+        - name: startDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Fecha de inicio (YYYY-MM-DD)
+          example: "2022-02-01"
+        - name: endDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Fecha de fin (YYYY-MM-DD)
+          example: "2022-02-28"
+      responses:
+        '200':
+          description: Reporte generado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountStatementResponse'
+        '400':
+          description: Parámetros inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Cliente no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    CreateAccountRequest:
+      type: object
+      required:
+        - accountNumber
+        - accountType
+        - initialBalance
+        - customerId
+      properties:
+        accountNumber:
+          type: string
+          minLength: 6
+          maxLength: 20
+          pattern: '^[0-9]+$'
+          example: "478758"
+        accountType:
+          type: string
+          enum: [SAVINGS, CHECKING]
+          example: "SAVINGS"
+        initialBalance:
+          type: number
+          format: double
+          minimum: 0
+          example: 2000.00
+        customerId:
+          type: integer
+          format: int64
+          example: 1
+
+    UpdateAccountRequest:
+      type: object
+      properties:
+        accountType:
+          type: string
+          enum: [SAVINGS, CHECKING]
+        status:
+          type: boolean
+
+    AccountResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        accountNumber:
+          type: string
+        accountType:
+          type: string
+          enum: [SAVINGS, CHECKING]
+        initialBalance:
+          type: number
+          format: double
+        currentBalance:
+          type: number
+          format: double
+        status:
+          type: boolean
+        customerId:
+          type: integer
+          format: int64
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateMovementRequest:
+      type: object
+      required:
+        - accountId
+        - movementType
+        - amount
+      properties:
+        accountId:
+          type: integer
+          format: int64
+          example: 1
+        movementType:
+          type: string
+          enum: [DEBIT, CREDIT]
+          example: "DEBIT"
+        amount:
+          type: number
+          format: double
+          minimum: 0.01
+          example: 575.00
+
+    MovementResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        date:
+          type: string
+          format: date-time
+        movementType:
+          type: string
+          enum: [DEBIT, CREDIT]
+        amount:
+          type: number
+          format: double
+        balance:
+          type: number
+          format: double
+        accountId:
+          type: integer
+          format: int64
+
+    AccountStatementResponse:
+      type: object
+      properties:
+        clientId:
+          type: integer
+          format: int64
+        clientName:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountStatementDetail'
+
+    AccountStatementDetail:
+      type: object
+      properties:
+        accountNumber:
+          type: string
+        accountType:
+          type: string
+          enum: [SAVINGS, CHECKING]
+        initialBalance:
+          type: number
+          format: double
+        currentBalance:
+          type: number
+          format: double
+        status:
+          type: boolean
+        movements:
+          type: array
+          items:
+            $ref: '#/components/schemas/MovementDetail'
+
+    MovementDetail:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date-time
+        movementType:
+          type: string
+          enum: [DEBIT, CREDIT]
+        amount:
+          type: number
+          format: double
+        balance:
+          type: number
+          format: double
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string

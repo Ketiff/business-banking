@@ -1,10 +1,71 @@
-server:
-  port: 8082
+ server:
+  port: 8083
 
 spring:
   application:
     name: account-service
 
+  # ========== CONFIGURACIÓN JPA + JDBC ==========
+  datasource:
+    url: jdbc:mysql://localhost:3306/account_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: bank_user
+    password: bank_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 20000
+
+  # ========== CONFIGURACIÓN JPA/HIBERNATE ==========
+  jpa:
+    hibernate:
+      ddl-auto: none  # ✅ NO auto-crear tablas (scripts SQL)
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+        show_sql: false
+        use_sql_comments: true
+    show-sql: false
+    open-in-view: false  # Para evitar lazy loading issues
+
+  # ========== CONFIGURACIÓN SQL SCRIPTS ==========
+  sql:
+    init:
+      mode: never  # Ejecutar manualmente los scripts
+
+# ========== LOGGING ==========
 logging:
   level:
-    com.bank.account: DEBUG
+    com.bank.account_service: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.web.reactive: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# ========== SWAGGER/OPENAPI CONFIGURATION ==========
+springdoc:
+  api-docs:
+    path: /api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operationsSorter: method
+    tagsSorter: alpha
+  show-actuator: false
+
+# ========== INFORMACIÓN DE LA API ==========
+info:
+  app:
+    name: Account Service
+    description: Microservicio para gestión de cuentas y movimientos bancarios
+    version: 1.0.0
+
+# ========== CONFIGURACIÓN customer-service ==========
+customer-service:
+  url: http://localhost:8081
+  timeout:
+    connect: 5000
+    read: 10000
