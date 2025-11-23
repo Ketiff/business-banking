@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -23,28 +24,30 @@ public class AccountController implements AccountsApi {
     private final AccountRestMapper accountMapper;
 
     @Override
-    public Mono<ResponseEntity<Flux<AccountResponse>>> getAllAccounts() {
+    public Mono<ResponseEntity<Flux<AccountResponse>>> getAllAccounts(ServerWebExchange exchange) {
         log.info("GET /api/v1/accounts - List all accounts");
-
         return Mono.just(ResponseEntity.ok(
-                accountUseCase.findAll()
-                        .map(accountMapper::toResponse)
+                accountUseCase.findAll().map(accountMapper::toResponse)
         ));
     }
 
     @Override
-    public Mono<ResponseEntity<AccountResponse>> createAccount(CreateAccountRequest createAccountRequest) {
-        log.info("POST /api/v1/accounts - Create account: {}", createAccountRequest.getAccountNumber());
+    public Mono<ResponseEntity<AccountResponse>> createAccount(
+            Mono<CreateAccountRequest> createAccountRequest,
+            ServerWebExchange exchange) {
+        log.info("POST /api/v1/accounts - Create account");
 
-        var account = accountMapper.toDomain(createAccountRequest);
-
-        return accountUseCase.createAccount(account)
+        return createAccountRequest
+                .map(accountMapper::toDomain)
+                .flatMap(accountUseCase::createAccount)
                 .map(accountMapper::toResponse)
                 .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
     }
 
     @Override
-    public Mono<ResponseEntity<AccountResponse>> getAccountById(Long id) {
+    public Mono<ResponseEntity<AccountResponse>> getAccountById(
+            Long id,
+            ServerWebExchange exchange) {
         log.info("GET /api/v1/accounts/{} - Get account by ID", id);
 
         return accountUseCase.findById(id)
@@ -53,18 +56,23 @@ public class AccountController implements AccountsApi {
     }
 
     @Override
-    public Mono<ResponseEntity<AccountResponse>> updateAccount(Long id, UpdateAccountRequest updateAccountRequest) {
+    public Mono<ResponseEntity<AccountResponse>> updateAccount(
+            Long id,
+            Mono<UpdateAccountRequest> updateAccountRequest,
+            ServerWebExchange exchange) {
         log.info("PUT /api/v1/accounts/{} - Update account", id);
 
-        var account = accountMapper.toDomain(updateAccountRequest);
-
-        return accountUseCase.updateAccount(id, account)
+        return updateAccountRequest
+                .map(accountMapper::toDomain)
+                .flatMap(account -> accountUseCase.updateAccount(id, account))
                 .map(accountMapper::toResponse)
                 .map(ResponseEntity::ok);
     }
 
     @Override
-    public Mono<ResponseEntity<Void>> deleteAccount(Long id) {
+    public Mono<ResponseEntity<Void>> deleteAccount(
+            Long id,
+            ServerWebExchange exchange) {
         log.info("DELETE /api/v1/accounts/{} - Delete account", id);
 
         return accountUseCase.deleteAccount(id)
@@ -72,7 +80,9 @@ public class AccountController implements AccountsApi {
     }
 
     @Override
-    public Mono<ResponseEntity<AccountResponse>> getAccountByNumber(String accountNumber) {
+    public Mono<ResponseEntity<AccountResponse>> getAccountByNumber(
+            String accountNumber,
+            ServerWebExchange exchange) {
         log.info("GET /api/v1/accounts/number/{} - Get account by number", accountNumber);
 
         return accountUseCase.findByAccountNumber(accountNumber)
@@ -81,12 +91,13 @@ public class AccountController implements AccountsApi {
     }
 
     @Override
-    public Mono<ResponseEntity<Flux<AccountResponse>>> getAccountsByCustomerId(Long customerId) {
+    public Mono<ResponseEntity<Flux<AccountResponse>>> getAccountsByCustomerId(
+            Long customerId,
+            ServerWebExchange exchange) {
         log.info("GET /api/v1/accounts/customer/{} - Get accounts by customer", customerId);
 
         return Mono.just(ResponseEntity.ok(
-                accountUseCase.findByCustomerId(customerId)
-                        .map(accountMapper::toResponse)
+                accountUseCase.findByCustomerId(customerId).map(accountMapper::toResponse)
         ));
     }
 }

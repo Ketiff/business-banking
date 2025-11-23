@@ -1,11 +1,13 @@
- server:
-  port: 8083
+server:
+  port: 8082
 
 spring:
   application:
     name: account-service
 
-  # ========== CONFIGURACIÓN JPA + JDBC ==========
+  profiles:
+    active: local
+
   datasource:
     url: jdbc:mysql://localhost:3306/account_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: bank_user
@@ -16,10 +18,9 @@ spring:
       minimum-idle: 5
       connection-timeout: 20000
 
-  # ========== CONFIGURACIÓN JPA/HIBERNATE ==========
   jpa:
     hibernate:
-      ddl-auto: none  # ✅ NO auto-crear tablas (scripts SQL)
+      ddl-auto: none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
@@ -27,14 +28,12 @@ spring:
         show_sql: false
         use_sql_comments: true
     show-sql: false
-    open-in-view: false  # Para evitar lazy loading issues
+    open-in-view: false
 
-  # ========== CONFIGURACIÓN SQL SCRIPTS ==========
   sql:
     init:
-      mode: never  # Ejecutar manualmente los scripts
+      mode: never
 
-# ========== LOGGING ==========
 logging:
   level:
     com.bank.account_service: DEBUG
@@ -44,7 +43,6 @@ logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
 
-# ========== SWAGGER/OPENAPI CONFIGURATION ==========
 springdoc:
   api-docs:
     path: /api-docs
@@ -56,14 +54,13 @@ springdoc:
     tagsSorter: alpha
   show-actuator: false
 
-# ========== INFORMACIÓN DE LA API ==========
 info:
   app:
     name: Account Service
     description: Microservicio para gestión de cuentas y movimientos bancarios
     version: 1.0.0
 
-# ========== CONFIGURACIÓN customer-service ==========
+# Configuración para desarrollo local
 customer-service:
   url: http://localhost:8081
   timeout:

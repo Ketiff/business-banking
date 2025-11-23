@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -22,29 +23,30 @@ public class MovementController implements MovementsApi {
     private final MovementRestMapper movementMapper;
 
     @Override
-    public Mono<ResponseEntity<Flux<MovementResponse>>> getAllMovements() {
+    public Mono<ResponseEntity<Flux<MovementResponse>>> getAllMovements(ServerWebExchange exchange) {
         log.info("GET /api/v1/movements - List all movements");
-
         return Mono.just(ResponseEntity.ok(
-                movementUseCase.findAll()
-                        .map(movementMapper::toResponse)
+                movementUseCase.findAll().map(movementMapper::toResponse)
         ));
     }
 
     @Override
-    public Mono<ResponseEntity<MovementResponse>> createMovement(CreateMovementRequest createMovementRequest) {
-        log.info("POST /api/v1/movements - Register movement for account: {}",
-                createMovementRequest.getAccountId());
+    public Mono<ResponseEntity<MovementResponse>> createMovement(
+            Mono<CreateMovementRequest> createMovementRequest,
+            ServerWebExchange exchange) {
+        log.info("POST /api/v1/movements - Register movement");
 
-        var movement = movementMapper.toDomain(createMovementRequest);
-
-        return movementUseCase.registerMovement(movement)
+        return createMovementRequest
+                .map(movementMapper::toDomain)
+                .flatMap(movementUseCase::registerMovement)
                 .map(movementMapper::toResponse)
                 .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
     }
 
     @Override
-    public Mono<ResponseEntity<MovementResponse>> getMovementById(Long id) {
+    public Mono<ResponseEntity<MovementResponse>> getMovementById(
+            Long id,
+            ServerWebExchange exchange) {
         log.info("GET /api/v1/movements/{} - Get movement by ID", id);
 
         return movementUseCase.findById(id)
@@ -53,7 +55,9 @@ public class MovementController implements MovementsApi {
     }
 
     @Override
-    public Mono<ResponseEntity<Void>> deleteMovement(Long id) {
+    public Mono<ResponseEntity<Void>> deleteMovement(
+            Long id,
+            ServerWebExchange exchange) {
         log.info("DELETE /api/v1/movements/{} - Delete movement", id);
 
         return movementUseCase.deleteMovement(id)
@@ -61,12 +65,13 @@ public class MovementController implements MovementsApi {
     }
 
     @Override
-    public Mono<ResponseEntity<Flux<MovementResponse>>> getMovementsByAccountId(Long accountId) {
+    public Mono<ResponseEntity<Flux<MovementResponse>>> getMovementsByAccountId(
+            Long accountId,
+            ServerWebExchange exchange) {
         log.info("GET /api/v1/movements/account/{} - Get movements by account", accountId);
 
         return Mono.just(ResponseEntity.ok(
-                movementUseCase.findByAccountId(accountId)
-                        .map(movementMapper::toResponse)
+                movementUseCase.findByAccountId(accountId).map(movementMapper::toResponse)
         ));
     }
 }

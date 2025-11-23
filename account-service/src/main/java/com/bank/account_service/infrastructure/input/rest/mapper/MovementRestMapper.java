@@ -7,6 +7,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface MovementRestMapper {
 
@@ -16,4 +20,13 @@ public interface MovementRestMapper {
     Movement toDomain(CreateMovementRequest request);
 
     MovementResponse toResponse(Movement domain);
+
+    // Conversores de fecha
+    default OffsetDateTime map(LocalDateTime localDateTime) {
+        return localDateTime == null ? null : localDateTime.atOffset(ZoneOffset.UTC);
+    }
+
+    default LocalDateTime map(OffsetDateTime offsetDateTime) {
+        return offsetDateTime == null ? null : offsetDateTime.toLocalDateTime();
+    }
 }

@@ -1,0 +1,33 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: account-service
+
+  datasource:
+    url: jdbc:mysql://mysql-account:3306/account_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: bank_user
+    password: bank_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+    show-sql: false
+
+  sql:
+    init:
+      mode: never
+
+logging:
+  level:
+    com.bank.account_service: INFO
+    org.hibernate.SQL: INFO
+
+customer-service:
+  url: http://customer-service:8081

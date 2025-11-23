@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # =====================================================
+  # BASE DE DATOS: Account Service (nueva)
+  # =====================================================
+  mysql-account:
+    image: mysql:8.0
+    container_name: mysql-account-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: account_db
+      MYSQL_USER: bank_user
+      MYSQL_PASSWORD: bank_password
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_account_data:/var/lib/mysql
+      - ./account-service/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./account-service/src/main/resources/data.sql:/docker-entrypoint-initdb.d/02-data.sql
+    networks:
+      - bank-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "bank_user", "-pbank_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # =====================================================
+  # MICROSERVICIO: Customer Service
+  # =====================================================
+  customer-service:
+    build:
+      context: ./customer-service
+      dockerfile: Dockerfile
+    container_name: customer-service
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    networks:
+      - bank-network
+
+  # =====================================================
+  # MICROSERVICIO: Account Service
+  # =====================================================
+  account-service:
+    build:
+      context: ./account-service
+      dockerfile: Dockerfile
+    container_name: account-service
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      mysql-account:
+        condition: service_healthy
+    networks:
+      - bank-network
+
+# =====================================================
+# RED: Usar red existente (bank-network)
+# =====================================================
+networks:
+  bank-network:
+    external: true
+
+# =====================================================
+# VOLÚMENES
+# =====================================================
+volumes:
+  mysql_account_data:
