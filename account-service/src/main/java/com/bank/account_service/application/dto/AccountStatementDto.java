@@ -1,4 +1,4 @@
-package com.bank.account_service.application.ports.input;
+package com.bank.account_service.application.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,9 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountStatementDto {
-
-    private Long clientId;
-    private String clientName;
+    private Long customerId;
+    private String customerName;
     private LocalDate startDate;
     private LocalDate endDate;
     private List<AccountDetailDto> accounts;
@@ -29,7 +28,6 @@ public class AccountStatementDto {
         private String accountType;
         private Double initialBalance;
         private Double currentBalance;
-        private Boolean status;
         private List<MovementDetailDto> movements;
     }
 

@@ -28,7 +28,7 @@ public class ReportController implements ReportsApi {
             LocalDate endDate,
             ServerWebExchange exchange) {
 
-        log.info("GET /api/v1/reports/{}?startDate={}&endDate={} - Generating account statement",
+        log.info("GET /api/v1/reports/{} - Generate account statement from {} to {}",
                 clientId, startDate, endDate);
 
         return reportUseCase.generateAccountStatement(clientId, startDate, endDate)

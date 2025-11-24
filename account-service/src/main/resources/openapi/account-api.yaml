@@ -303,17 +303,17 @@ paths:
                 items:
                   $ref: '#/components/schemas/MovementResponse'
 
-  /api/v1/reports/{clientId}:
+  /api/v1/reports/{customerId}:
     get:
       tags:
         - reports
       summary: Generar reporte de estado de cuenta (F4)
       description: |
         Genera un reporte de estado de cuenta según requisito F4.
-        Endpoint: /api/v1/reports/{clientId}?startDate=fecha&endDate=fecha
+        Endpoint: /api/v1/reports/{customerId}?startDate=fecha&endDate=fecha
       operationId: getAccountStatement
       parameters:
-        - name: clientId
+        - name: customerId
           in: path
           required: true
           schema:
@@ -471,17 +471,23 @@ components:
     AccountStatementResponse:
       type: object
       properties:
-        clientId:
+        customerId:
           type: integer
           format: int64
-        clientName:
+          description: ID del cliente
+          example: 2
+        customerName:
           type: string
+          description: Nombre del cliente
+          example: "Marianela Montalvo"
         startDate:
           type: string
           format: date
+          example: "2022-02-01"
         endDate:
           type: string
           format: date
+          example: "2022-02-28"
         accounts:
           type: array
           items:
