@@ -18,6 +18,7 @@ public class AccountStatementDto {
     private LocalDate startDate;
     private LocalDate endDate;
     private List<AccountDetailDto> accounts;
+    private Boolean status;
 
     @Data
     @Builder

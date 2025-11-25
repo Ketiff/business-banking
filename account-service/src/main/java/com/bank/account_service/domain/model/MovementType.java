@@ -13,9 +13,6 @@ public enum MovementType {
         this.multiplier = multiplier;
     }
 
-    public String getDisplayName() {
-        return displayName;
-    }
 
     /**Este multiplicador se usa para calcular el nuevo saldo:
      * nuevoSaldo = saldoActual + (monto * multiplier)*/

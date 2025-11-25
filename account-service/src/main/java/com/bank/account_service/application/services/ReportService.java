@@ -59,8 +59,9 @@ public class ReportService implements ReportUseCase {
                                             return AccountStatementDto.AccountDetailDto.builder()
                                                     .accountNumber(account.getAccountNumber())
                                                     .accountType(account.getAccountType().name())
-                                                    .initialBalance(account.getInitialBalance().doubleValue())   // ← BigDecimal → Double
-                                                    .currentBalance(account.getCurrentBalance().doubleValue())   // ← BigDecimal → Double
+                                                    .initialBalance(account.getInitialBalance().doubleValue())
+                                                    .currentBalance(account.getCurrentBalance().doubleValue())
+                                                    .status(account.getStatus())
                                                     .movements(movementDetails)
                                                     .build();
                                         });

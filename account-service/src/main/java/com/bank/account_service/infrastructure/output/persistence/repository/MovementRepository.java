@@ -13,6 +13,7 @@ import java.util.List;
 public interface MovementRepository extends JpaRepository<MovementEntity, Long> {
 
     List<MovementEntity> findByAccountId(Long accountId);
+
     @Query("SELECT m FROM MovementEntity m WHERE m.account.id = :accountId " +
             "AND m.date BETWEEN :startDate AND :endDate " +
             "ORDER BY m.date ASC")
@@ -21,6 +22,4 @@ public interface MovementRepository extends JpaRepository<MovementEntity, Long> 
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
-    List<MovementEntity> findByAccountIdOrderByDateDesc(Long accountId);
-    long countByAccountId(Long accountId);
 }
