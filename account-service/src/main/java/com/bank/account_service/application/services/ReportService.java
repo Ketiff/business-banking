@@ -12,7 +12,6 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -51,8 +50,8 @@ public class ReportService implements ReportUseCase {
                                                     .map(movement -> AccountStatementDto.MovementDetailDto.builder()
                                                             .date(movement.getDate().format(DATE_FORMATTER))
                                                             .movementType(movement.getMovementType().name())
-                                                            .amount(movement.getAmount().doubleValue())  // ← BigDecimal → Double
-                                                            .balance(movement.getBalance().doubleValue()) // ← BigDecimal → Double
+                                                            .amount(movement.getAmount().doubleValue())
+                                                            .balance(movement.getBalance().doubleValue())
                                                             .build())
                                                     .toList();
 
@@ -61,21 +60,21 @@ public class ReportService implements ReportUseCase {
                                                     .accountType(account.getAccountType().name())
                                                     .initialBalance(account.getInitialBalance().doubleValue())
                                                     .currentBalance(account.getCurrentBalance().doubleValue())
-                                                    .status(account.getStatus())
+                                                    .status(account.getStatus())  // ← AHORA SÍ FUNCIONA
                                                     .movements(movementDetails)
                                                     .build();
                                         });
                             })
                             .collectList()
-                            .map(accountDetails -> {
-                                log.info("Generated statement with {} accounts", accountDetails.size());
+                            .map(accountDetailsList -> {
+                                log.info("Generated statement with {} accounts", accountDetailsList.size());
 
                                 return AccountStatementDto.builder()
                                         .customerId(customerId)
                                         .customerName(customer.getName())
                                         .startDate(startDate)
                                         .endDate(endDate)
-                                        .accounts(accountDetails) // ← Ya es List<AccountDetailDto>
+                                        .accounts(accountDetailsList)  // ← AHORA ES List<AccountDetailDto>
                                         .build();
                             });
                 });

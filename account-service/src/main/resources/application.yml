@@ -5,11 +5,8 @@ spring:
   application:
     name: account-service
 
-  profiles:
-    active: local
-
   datasource:
-    url: jdbc:mysql://localhost:3306/account_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://mysql-account:3306/account_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: bank_user
     password: bank_password
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -26,7 +23,6 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
         show_sql: false
-        use_sql_comments: true
     show-sql: false
     open-in-view: false
 
@@ -34,25 +30,15 @@ spring:
     init:
       mode: never
 
+  profiles:
+    active: docker
+
 logging:
   level:
-    com.bank.account_service: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.springframework.web.reactive: DEBUG
+    com.bank.account_service: INFO
+    org.hibernate.SQL: INFO
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-
-springdoc:
-  api-docs:
-    path: /api-docs
-    enabled: true
-  swagger-ui:
-    path: /swagger-ui.html
-    enabled: true
-    operationsSorter: method
-    tagsSorter: alpha
-  show-actuator: false
 
 info:
   app:
@@ -60,9 +46,8 @@ info:
     description: Microservicio para gestión de cuentas y movimientos bancarios
     version: 1.0.0
 
-# Configuración para desarrollo local
 customer-service:
-  url: http://localhost:8081
+  url: http://customer-service:8081
   timeout:
     connect: 5000
     read: 10000

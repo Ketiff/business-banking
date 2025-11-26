@@ -18,7 +18,6 @@ public class AccountStatementDto {
     private LocalDate startDate;
     private LocalDate endDate;
     private List<AccountDetailDto> accounts;
-    private Boolean status;
 
     @Data
     @Builder
@@ -29,6 +28,7 @@ public class AccountStatementDto {
         private String accountType;
         private Double initialBalance;
         private Double currentBalance;
+        private Boolean status;           // ← ESTE CAMPO FALTABA
         private List<MovementDetailDto> movements;
     }
 
