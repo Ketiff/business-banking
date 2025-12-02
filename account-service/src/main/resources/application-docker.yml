@@ -29,5 +29,22 @@ logging:
     com.bank.account_service: INFO
     org.hibernate.SQL: INFO
 
+springdoc:
+  api-docs:
+    path: /api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operationsSorter: method
+    tagsSorter: alpha
+  show-actuator: false
+
+info:
+  app:
+    name: Account Service
+    description: Microservicio para gestión de cuentas y movimientos bancarios
+    version: 1.0.0
+
 customer-service:
   url: http://customer-service:8081

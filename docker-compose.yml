@@ -1,8 +1,33 @@
 version: '3.8'
-
 services:
   # =====================================================
-  # BASE DE DATOS: Account Service (nueva)
+  # BASE DE DATOS: Customer Service (bank-mysql)
+  # =====================================================
+  bank-mysql:
+    image: mysql:8.0
+    container_name: bank-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: customer_db
+      MYSQL_USER: bank_user
+      MYSQL_PASSWORD: bank_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - bank_mysql_data:/var/lib/mysql
+      - ./customer-service/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./customer-service/src/main/resources/data.sql:/docker-entrypoint-initdb.d/02-data.sql
+    networks:
+      - bank-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "bank_user", "-pbank_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # =====================================================
+  # BASE DE DATOS: Account Service
   # =====================================================
   mysql-account:
     image: mysql:8.0
@@ -40,6 +65,9 @@ services:
       - "8081:8081"
     environment:
       SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      bank-mysql:
+        condition: service_healthy
     networks:
       - bank-network
 
@@ -59,6 +87,8 @@ services:
     depends_on:
       mysql-account:
         condition: service_healthy
+      customer-service:
+        condition: service_started
     networks:
       - bank-network
 
@@ -73,4 +103,5 @@ networks:
 # VOLÚMENES
 # =====================================================
 volumes:
-  mysql_account_data:
+  bank_mysql_data:      # ⚠️ Volumen para customer-service
+  mysql_account_data:   # Volumen para account-service
