@@ -19,13 +19,13 @@ import java.time.LocalDateTime;
 public class AccountService implements AccountUseCase {
 
     private final AccountPersistencePort accountPersistence;
-    private final CustomerClientPort customerClient;
+    private final CustomerClientPort customerPort;
 
     @Override
     public Mono<Account> createAccount(Account account) {
         log.info("Creating account: {}", account.getAccountNumber());
 
-        return customerClient.existsCustomer(account.getCustomerId())
+        return customerPort.existsCustomer(account.getCustomerId())
                 .flatMap(exists -> {
                     if (!exists) {
                         return Mono.error(new AccountExceptions.InvalidAccountDataException(

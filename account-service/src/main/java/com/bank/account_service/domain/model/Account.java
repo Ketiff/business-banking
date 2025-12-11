@@ -24,17 +24,14 @@ public class Account {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    // Método de negocio: validar si la cuenta está activa
     public boolean isActive() {
         return Boolean.TRUE.equals(status);
     }
 
-    // Método de negocio: validar si tiene saldo suficiente
     public boolean hasSufficientBalance(BigDecimal amount) {
         return currentBalance.compareTo(amount) >= 0;
     }
 
-    // Método de negocio: actualizar saldo
     public void updateBalance(BigDecimal newBalance) {
         this.currentBalance = newBalance;
         this.updatedAt = LocalDateTime.now();

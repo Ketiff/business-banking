@@ -9,7 +9,7 @@ public class AccountExceptions {
     }
 
     public static class InsufficientBalanceException extends RuntimeException {
-        // F3: Mensaje exacto requerido
+        // F3
         private static final String MESSAGE = "Saldo no disponible";
 
         public InsufficientBalanceException() {

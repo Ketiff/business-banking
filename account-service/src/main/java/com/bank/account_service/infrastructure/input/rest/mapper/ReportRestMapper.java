@@ -13,14 +13,8 @@ import java.time.format.DateTimeFormatter;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ReportRestMapper {
 
-    /**
-     * Convert application DTO to REST response
-     */
     AccountStatementResponse toResponse(AccountStatementDto dto);
 
-    /**
-     * Convert String (date-time) to OffsetDateTime
-     */
     default OffsetDateTime map(String dateString) {
         if (dateString == null) {
             return null;

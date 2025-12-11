@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class CustomerClientAdapter implements CustomerClientPort {
 
-    private final WebClient customerWebClient;
+    private final WebCli ent customerWebClient;
 
     @Override
     public Mono<Boolean> existsCustomer(Long customerId) {

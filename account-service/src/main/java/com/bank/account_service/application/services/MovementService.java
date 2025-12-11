@@ -28,7 +28,7 @@ public class MovementService implements MovementUseCase {
     public Mono<Movement> registerMovement(Movement movement) {
         log.info("Registering movement for account: {}", movement.getAccountId());
 
-        // F2: Validar que el monto sea mayor a 0
+        // monto sea mayor a 0
         if (!Movement.isValidAmount(movement.getAmount())) {
             return Mono.error(new AccountExceptions.InvalidMovementException(
                     "El valor del movimiento debe ser mayor a cero"));
@@ -48,29 +48,21 @@ public class MovementService implements MovementUseCase {
             return Mono.error(new AccountExceptions.InactiveAccountException(
                     "La cuenta " + account.getAccountNumber() + " no está activa"));
         }
-
         // F2: Calcular nuevo saldo
         BigDecimal newBalance = Movement.calculateNewBalance(
                 account.getCurrentBalance(),
                 movement.getMovementType(),
                 movement.getAmount()
         );
-
         // F3: Validar saldo disponible para DEBIT
         if (movement.getMovementType() == MovementType.DEBIT) {
             if (!account.hasSufficientBalance(movement.getAmount())) {
                 return Mono.error(new AccountExceptions.InsufficientBalanceException());
             }
         }
-
-        // Actualizar cuenta
         account.updateBalance(newBalance);
-
-        // Preparar movimiento
         movement.setDate(LocalDateTime.now());
         movement.setBalance(newBalance);
-
-        // Guardar en orden: primero cuenta, luego movimiento
         return accountPersistence.save(account)
                 .then(movementPersistence.save(movement));
     }

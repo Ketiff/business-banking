@@ -28,7 +28,7 @@ public class AccountStatementDto {
         private String accountType;
         private Double initialBalance;
         private Double currentBalance;
-        private Boolean status;           // ← ESTE CAMPO FALTABA
+        private Boolean status;
         private List<MovementDetailDto> movements;
     }
 

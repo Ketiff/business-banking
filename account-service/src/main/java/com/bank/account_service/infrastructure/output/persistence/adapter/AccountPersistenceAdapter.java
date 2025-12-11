@@ -1,4 +1,4 @@
-package com.bank.account_service.infrastructure.output.persistence.adapter;
+ package com.bank.account_service.infrastructure.output.persistence.adapter;
 
 import com.bank.account_service.application.ports.output.AccountPersistencePort;
 import com.bank.account_service.domain.model.Account;

@@ -9,6 +9,5 @@ import org.mapstruct.MappingConstants;
 public interface AccountPersistenceMapper {
 
     Account toDomain(AccountEntity entity);
-
     AccountEntity toEntity(Account domain);
 }

@@ -13,14 +13,12 @@ public enum MovementType {
         this.multiplier = multiplier;
     }
 
-
-    /**Este multiplicador se usa para calcular el nuevo saldo:
-     * nuevoSaldo = saldoActual + (monto * multiplier)*/
+    // nuevoSaldo = saldoActual + (monto * multiplier)
     public int getMultiplier() {
         return multiplier;
     }
 
-    /**@return true si es DEBIT (requiere validación), false si es CREDIT*/
+    //@return true si es DEBIT (requiere validación), false si es CREDIT
     public boolean requiresBalanceValidation() {
         return this == DEBIT;
     }

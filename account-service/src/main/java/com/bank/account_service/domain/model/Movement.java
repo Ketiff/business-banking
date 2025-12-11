@@ -21,7 +21,6 @@ public class Movement {
     private BigDecimal balance;
     private Long accountId;
 
-    // Método de negocio: calcular nuevo saldo
     public static BigDecimal calculateNewBalance(BigDecimal currentBalance,
                                                  MovementType type,
                                                  BigDecimal amount) {
@@ -30,7 +29,6 @@ public class Movement {
         );
     }
 
-    // Método de negocio: validar monto
     public static boolean isValidAmount(BigDecimal amount) {
         return amount != null && amount.compareTo(BigDecimal.ZERO) > 0;
     }
